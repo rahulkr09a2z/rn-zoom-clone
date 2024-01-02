@@ -1,47 +1,38 @@
-import { useState } from "react";
-import {
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { useState, useEffect } from "react";
+import { StyleSheet, View } from "react-native";
+import StartMeeting from "../components/StartMeeting";
+import io from "socket.io-client";
+
+const API_URL = "https://9d7b-180-151-211-10.ngrok-free.app";
 
 const MeetingRoom = () => {
   const [name, setName] = useState();
   const [roomId, setRoomId] = useState();
+  const [activeUsers, setActiveUsers]=useState()
+
+  const joinRoom = () => {
+    socket.emit("join-room", { roomId: roomId, userName: name });
+  };
+
+  useEffect(() => {
+    socket = io(`${API_URL}`);
+    socket.on("connection", () => console.log("connected"));
+    socket.on('all-users',users=>{
+      console.log("active users",users)
+      setActiveUsers(users)
+    })
+  }, []);
 
   return (
     <View style={styles.container}>
       {/* Start Meeting Section */}
-      <View style={styles.startMeetingContainer}>
-        <View style={styles.info}>
-          <TextInput
-            style={styles.textInput}
-            value={name}
-            placeholder="Enter name"
-            placeholderTextColor="#767476"
-            onChangeText={(text) => setName(text)}
-          />
-        </View>
-        <View style={styles.info}>
-          <TextInput
-            style={styles.textInput}
-            value={roomId}
-            placeholder="Enter room id"
-            placeholderTextColor="#767476"
-            onChangeText={(text) => setRoomId(text)}
-          />
-        </View>
-        <View style={styles.bottomContainer}>
-          <TouchableOpacity
-            onPress={() => {}}
-            style={styles.startMeetingButton}
-          >
-            <Text style={styles.startMeetText}>Start Meeting</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
+      <StartMeeting
+        name={name}
+        setName={setName}
+        roomId={roomId}
+        setRoomId={setRoomId}
+        joinRoom={joinRoom}
+      />
     </View>
   );
 };
@@ -52,36 +43,5 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: "#1c1c1c",
     flex: 1,
-  },
-  startMeetingContainer: {},
-  info: {
-    width: "100%",
-    backgroundColor: "#373538",
-    height: 50,
-    borderTopWidth: 1,
-    borderBottomWidth: 1,
-    borderColor: "#484648",
-    padding: 12,
-    justifyContent: "center",
-  },
-  textInput: {
-    color: "white",
-    fontSize: 18,
-  },
-  bottomContainer: {
-    alignItems: "center",
-  },
-  startMeetText: {
-    color: "white",
-    fontWeight:"bold"
-  },
-  startMeetingButton: {
-    width: 350,
-    marginTop: 20,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#0470DC",
-    height: 50,
-    borderRadius: 15,
   },
 });
