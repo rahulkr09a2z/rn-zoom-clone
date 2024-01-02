@@ -1,4 +1,3 @@
-import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 import Fontisto from "react-native-vector-icons/Fontisto";
 
